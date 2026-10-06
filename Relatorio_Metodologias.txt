@@ -1,0 +1,467 @@
+====================================================================================================
+                               RELATÓRIO DE METODOLOGIAS DE PROJEÇÃO                                
+====================================================================================================
+Gerado em            : 06/10/2026 16:55
+Arquivo de entrada   : DadosHistoricos.csv
+Histórico disponível : 01/2021 a 09/2026 (69 meses, 13 medições)
+Dados usados no ajuste: até 09/2026
+Período projetado    : 10/2027 a 12/2035 (99 meses)
+
+Observação: nos totais anuais, os seguintes anos estão incompletos (somam apenas os meses
+projetados): 2027 (3 meses).
+
+AVISOS
+  - Há 12 mês(es) entre o fim do histórico e o início pedido; eles são projetados internamente, mas
+  não são gravados.
+  - Horizonte de 111 meses à frente do último dado: a incerteza cresce com o horizonte;
+  recomenda-se revisar as projeções periodicamente.
+
+CRITÉRIOS UTILIZADOS
+----------------------------------------------------------------------------------------------------
+  1. Período ativo: zeros consecutivos no início indicam unidade ainda não ligada e são
+  descartados; blocos internos de zeros consecutivos fazem considerar apenas o período ativo mais
+  recente; zeros consecutivos no final indicam unidade desligada (projeção zero). Um primeiro mês
+  muito abaixo dos seguintes (ligação no meio do mês) também é descartado.
+  2. Para cada medição foram testadas até 14 metodologias (médias, ingênuo sazonal, suavização
+  exponencial, Holt amortecido, Holt-Winters aditivo/multiplicativo, Theta, regressões com e sem
+  sazonalidade, autorregressivo sazonal, sazonal com crescimento e combinação de modelos).
+  Metodologias que exigem mais histórico do que o disponível não são elegíveis; métodos que
+  extrapolam tendência exigem ao menos 24 meses de histórico ativo.
+  3. Validação cruzada temporal (backtesting com origem móvel): cada metodologia é ajustada apenas
+  com dados anteriores a cada janela e projeta os meses seguintes, comparando-se com o realizado.
+  Métrica principal: WAPE (erro absoluto percentual ponderado), média das janelas. A validação mede
+  o acerto até o tamanho da janela de teste; para horizontes mais longos a incerteza naturalmente
+  aumenta.
+  4. Plausibilidade: projeções finais com valores negativos, não numéricos ou explosivos (média dos
+  12 primeiros meses fora de 0,5x a 2x ou dos 12 últimos fora de 0,33x a 3x a média dos últimos 12
+  meses reais) são reprovadas.
+  5. Parcimônia: entre metodologias com WAPE até 2% (relativo) acima do melhor, escolhe-se a mais
+  simples.
+  6. Identidades contábeis detectadas entre medições (ex.: líquida = total - parcelas) podem ser
+  preservadas calculando a medição derivada a partir das demais projeções.
+
+RESUMO
+----------------------------------------------------------------------------------------------------
+  Medição              Histórico usado        Metodologia escolhida                              WAPE
+  MUX                  01/2021-09/2026 (69m)  Regressão linear (tendência)                      6,92%
+  PLASBIL              01/2021-09/2026 (69m)  Regressão linear com sazonalidade mensal          5,49%
+  PIETROBON            01/2021-09/2026 (69m)  Média sazonal (nível x índices sazonais)          4,17%
+  SIMONETTO            01/2022-09/2026 (57m)  Holt-Winters multiplicativo (tendência amortecida)    8,36%
+  ITALAC               06/2023-09/2026 (40m)  Suavização exponencial simples (SES)              4,26%
+  KANINHA              10/2024-09/2026 (24m)  Média simples (últimos 12 meses)                  8,23%
+  RECH                 10/2024-09/2026 (24m)  Ingênuo sazonal                                   6,99%
+  DANIELI              12/2024-09/2026 (22m)  Ingênuo sazonal                                   5,88%
+  MASTER               12/2024-09/2026 (22m)  Ingênuo sazonal                                   5,94%
+  PRIMAVERA            03/2025-09/2026 (19m)  Suavização exponencial simples (SES)             19,09%
+  BB                   04/2025-09/2026 (18m)  Média simples (últimos 12 meses)                 16,90%
+  CASELANI             02/2026-09/2026 (8m)   Média móvel de 3 meses                            5,01%
+  LIQUIDA_MUX          01/2021-09/2026 (69m)  Identidade contábil                                   -
+
+DETALHAMENTO POR MEDIÇÃO
+====================================================================================================
+
+>>> MUX
+----------------------------------------------------------------------------------------------------
+  Período considerado : 01/2021 a 09/2026 (69 meses)
+  Metodologia         : Regressão linear (tendência)
+  Por que esta metodologia:
+    Características da série: sazonalidade fraca (força sazonal 0,34); tendência de alta
+    estatisticamente significativa (+4,4% ao ano, p=0,000); variabilidade baixa (coeficiente de
+    variação 10,3%). Entre 13 metodologias testadas (13 válidas), 'Regressão linear (tendência)'
+    obteve o menor erro na validação cruzada temporal (4 janelas de teste de 12 meses): WAPE de
+    6,92% e viés de -5,32%. Como funciona: reta de tendência ajustada por mínimos quadrados;
+    adequado a crescimento/queda constante sem sazonalidade.
+  Ranking das metodologias testadas:
+   #  Metodologia                                               WAPE      Viés  Situação
+  --------------------------------------------------------------------------------------------------
+ * 1  Regressão linear (tendência)                             6,92%    -5,32%  válido
+   2  Regressão linear com sazonalidade mensal                 7,05%    -5,09%  válido
+   3  Combinação de modelos (média)                            7,07%    -1,46%  válido
+   4  Média simples (últimos 12 meses)                         7,16%    -6,02%  válido
+   5  Sazonal com crescimento anual                            7,32%    +1,64%  válido
+   6  Ingênuo sazonal                                          7,86%    -6,02%  válido
+   7  Média sazonal (nível x índices sazonais)                 7,91%    -6,02%  válido
+   8  Suavização exponencial simples (SES)                     8,01%    -3,08%  válido
+   9  Holt-Winters aditivo (tendência amortecida)              8,06%    -1,80%  válido
+  10  Método Theta                                             8,13%    -2,08%  válido
+  11  Holt-Winters multiplicativo (tendência amortecida)       8,45%    -1,80%  válido
+  12  Média móvel de 3 meses                                   8,51%    -2,55%  válido
+  13  Holt com tendência amortecida                            9,09%    +0,37%  válido
+  14  Autorregressivo sazonal (AR 1 e 12)                          -         -  não aplicável: modelo autorregressivo não estacionário (explosivo).
+  (*) metodologia escolhida  |  WAPE = erro absoluto total / valor real total; viés + = superestimou
+
+>>> PLASBIL
+----------------------------------------------------------------------------------------------------
+  Período considerado : 01/2021 a 09/2026 (69 meses)
+  Metodologia         : Regressão linear com sazonalidade mensal
+  Por que esta metodologia:
+    Características da série: sazonalidade forte (força sazonal 0,69); tendência de alta
+    estatisticamente significativa (+4,8% ao ano, p=0,000); variabilidade baixa (coeficiente de
+    variação 13,5%). Entre 14 metodologias testadas (14 válidas), 'Regressão linear com
+    sazonalidade mensal' obteve o menor erro na validação cruzada temporal (4 janelas de teste de
+    12 meses): WAPE de 5,49% e viés de -1,04%. Como funciona: tendência linear mais um efeito fixo
+    para cada mês do ano; adequado a tendência constante com sazonalidade estável.
+  Ranking das metodologias testadas:
+   #  Metodologia                                               WAPE      Viés  Situação
+  --------------------------------------------------------------------------------------------------
+ * 1  Regressão linear com sazonalidade mensal                 5,49%    -1,04%  válido
+   2  Autorregressivo sazonal (AR 1 e 12)                      6,45%    -3,14%  válido
+   3  Combinação de modelos (média)                            6,61%    -4,02%  válido
+   4  Média sazonal (nível x índices sazonais)                 7,00%    -4,87%  válido
+   5  Método Theta                                             8,21%    -4,52%  válido
+   6  Regressão linear (tendência)                             8,27%    -1,48%  válido
+   7  Ingênuo sazonal                                          8,47%    -4,87%  válido
+   8  Holt-Winters aditivo (tendência amortecida)              8,65%    -6,67%  válido
+   9  Holt-Winters multiplicativo (tendência amortecida)       8,82%    -6,78%  válido
+  10  Sazonal com crescimento anual                            9,41%    +0,09%  válido
+  11  Média simples (últimos 12 meses)                         9,87%    -4,87%  válido
+  12  Suavização exponencial simples (SES)                     9,90%    -6,10%  válido
+  13  Holt com tendência amortecida                            9,91%    -6,09%  válido
+  14  Média móvel de 3 meses                                  10,18%    -4,92%  válido
+  (*) metodologia escolhida  |  WAPE = erro absoluto total / valor real total; viés + = superestimou
+
+>>> PIETROBON
+----------------------------------------------------------------------------------------------------
+  Período considerado : 01/2021 a 09/2026 (69 meses)
+  Metodologia         : Média sazonal (nível x índices sazonais)
+  Por que esta metodologia:
+    Características da série: sazonalidade moderada (força sazonal 0,63); tendência de alta
+    estatisticamente significativa (+7,3% ao ano, p=0,000); variabilidade moderada (coeficiente de
+    variação 16,8%). Entre 14 metodologias testadas (14 válidas), 'Média sazonal (nível x índices
+    sazonais)' obteve o menor erro na validação cruzada temporal (4 janelas de teste de 12 meses):
+    WAPE de 4,17% e viés de -1,28%. Como funciona: nível dos últimos 12 meses multiplicado por
+    índices sazonais médios do histórico; adequado a sazonalidade estável sem tendência.
+  Ranking das metodologias testadas:
+   #  Metodologia                                               WAPE      Viés  Situação
+  --------------------------------------------------------------------------------------------------
+ * 1  Média sazonal (nível x índices sazonais)                 4,17%    -1,28%  válido
+   2  Ingênuo sazonal                                          5,05%    -1,28%  válido
+   3  Holt-Winters aditivo (tendência amortecida)              5,26%    -0,82%  válido
+   4  Holt-Winters multiplicativo (tendência amortecida)       5,34%    -0,84%  válido
+   5  Combinação de modelos (média)                            5,51%    +1,54%  válido
+   6  Sazonal com crescimento anual                            5,84%    +3,10%  válido
+   7  Autorregressivo sazonal (AR 1 e 12)                      7,12%    +1,50%  válido
+   8  Média simples (últimos 12 meses)                         7,34%    -1,28%  válido
+   9  Holt com tendência amortecida                            8,11%    -1,53%  válido
+  10  Média móvel de 3 meses                                   8,47%    -0,25%  válido
+  11  Suavização exponencial simples (SES)                     8,65%    -1,81%  válido
+  12  Método Theta                                             8,67%    +0,79%  válido
+  13  Regressão linear com sazonalidade mensal                 8,70%    +8,61%  válido
+  14  Regressão linear (tendência)                             9,52%    +7,94%  válido
+  (*) metodologia escolhida  |  WAPE = erro absoluto total / valor real total; viés + = superestimou
+
+>>> SIMONETTO
+----------------------------------------------------------------------------------------------------
+  Período considerado : 01/2022 a 09/2026 (57 meses)
+  Metodologia         : Holt-Winters multiplicativo (tendência amortecida)
+  - Zeros iniciais de 01/2021 a 12/2021 desconsiderados (unidade ainda não ligada).
+  Por que esta metodologia:
+    Características da série: sazonalidade forte (força sazonal 0,70); tendência de alta
+    estatisticamente significativa (+9,9% ao ano, p=0,000); variabilidade moderada (coeficiente de
+    variação 17,8%). Entre 13 metodologias testadas (13 válidas), 'Holt-Winters multiplicativo
+    (tendência amortecida)' obteve o menor erro na validação cruzada temporal (4 janelas de teste
+    de 12 meses): WAPE de 8,36% e viés de -3,53%. Como funciona: suavização exponencial de nível,
+    tendência amortecida e sazonalidade multiplicativa (amplitude sazonal proporcional ao nível).
+  Ranking das metodologias testadas:
+   #  Metodologia                                               WAPE      Viés  Situação
+  --------------------------------------------------------------------------------------------------
+ * 1  Holt-Winters multiplicativo (tendência amortecida)       8,36%    -3,53%  válido
+   2  Holt-Winters aditivo (tendência amortecida)              8,60%    -3,79%  válido
+   3  Regressão linear com sazonalidade mensal                 8,85%    -4,97%  válido
+   4  Sazonal com crescimento anual                            8,98%    +2,56%  válido
+   5  Combinação de modelos (média)                            9,09%    -3,17%  válido
+   6  Holt com tendência amortecida                           11,14%    -2,93%  válido
+   7  Ingênuo sazonal                                         11,48%   -10,04%  válido
+   8  Média sazonal (nível x índices sazonais)                12,04%   -10,04%  válido
+   9  Média móvel de 3 meses                                  12,21%    -4,63%  válido
+  10  Regressão linear (tendência)                            12,30%    -6,25%  válido
+  11  Método Theta                                            12,61%    -6,35%  válido
+  12  Suavização exponencial simples (SES)                    14,20%    -8,96%  válido
+  13  Média simples (últimos 12 meses)                        14,81%   -10,04%  válido
+  14  Autorregressivo sazonal (AR 1 e 12)                          -         -  não aplicável: modelo autorregressivo não estacionário (explosivo).
+  (*) metodologia escolhida  |  WAPE = erro absoluto total / valor real total; viés + = superestimou
+
+>>> ITALAC
+----------------------------------------------------------------------------------------------------
+  Período considerado : 06/2023 a 09/2026 (40 meses)
+  Metodologia         : Suavização exponencial simples (SES)
+  - Zeros iniciais de 01/2021 a 05/2023 desconsiderados (unidade ainda não ligada).
+  Por que esta metodologia:
+    Características da série: sazonalidade moderada (força sazonal 0,61); tendência de alta
+    estatisticamente significativa (+9,0% ao ano, p=0,000); variabilidade baixa (coeficiente de
+    variação 10,3%). Entre 13 metodologias testadas (13 válidas), 'Suavização exponencial simples
+    (SES)' obteve o menor erro na validação cruzada temporal (4 janelas de teste de 10 meses): WAPE
+    de 4,26% e viés de +0,84%. Como funciona: nível ponderado com pesos decrescentes no tempo;
+    adequado a séries sem tendência nem sazonalidade, mas com nível que oscila.
+  Ranking das metodologias testadas:
+   #  Metodologia                                               WAPE      Viés  Situação
+  --------------------------------------------------------------------------------------------------
+ * 1  Suavização exponencial simples (SES)                     4,26%    +0,84%  válido
+   2  Média móvel de 3 meses                                   4,55%    +0,62%  válido
+   3  Método Theta                                             5,24%    +3,43%  válido
+   4  Regressão linear com sazonalidade mensal                 5,40%    +3,36%  válido
+   5  Regressão linear (tendência)                             6,31%    +2,90%  válido
+   6  Média sazonal (nível x índices sazonais)                 6,75%    -5,53%  válido
+   7  Média simples (últimos 12 meses)                         6,83%    -5,70%  válido
+   8  Holt com tendência amortecida                            7,06%    +6,05%  válido
+   9  Combinação de modelos (média)                            7,18%    +6,66%  válido
+  10  Ingênuo sazonal                                          7,99%    -7,00%  válido
+  11  Sazonal com crescimento anual                            9,35%    +7,26%  válido
+  12  Holt-Winters aditivo (tendência amortecida)              9,93%    +9,16%  válido
+  13  Holt-Winters multiplicativo (tendência amortecida)      11,50%   +10,72%  válido
+  14  Autorregressivo sazonal (AR 1 e 12)                          -         -  não elegível: exige 36 meses de treino e a menor janela de validação tem 24
+  (*) metodologia escolhida  |  WAPE = erro absoluto total / valor real total; viés + = superestimou
+
+>>> KANINHA
+----------------------------------------------------------------------------------------------------
+  Período considerado : 10/2024 a 09/2026 (24 meses)
+  Metodologia         : Média simples (últimos 12 meses)
+  - Zeros iniciais de 01/2021 a 09/2024 desconsiderados (unidade ainda não ligada).
+  Por que esta metodologia:
+    Características da série: sazonalidade não mensurável (menos de 36 meses de histórico); sem
+    tendência estatisticamente significativa (+0,8% ao ano, p=0,87); variabilidade baixa
+    (coeficiente de variação 12,2%). Entre 8 metodologias testadas (8 válidas), 'Média simples
+    (últimos 12 meses)' obteve o menor erro na validação cruzada temporal (4 janelas de teste de 6
+    meses): WAPE de 8,23% e viés de -5,56%. Como funciona: projeta um nível constante igual à média
+    dos últimos 12 meses; adequado a séries estáveis, sem tendência nem sazonalidade relevantes.
+  Ranking das metodologias testadas:
+   #  Metodologia                                               WAPE      Viés  Situação
+  --------------------------------------------------------------------------------------------------
+ * 1  Média simples (últimos 12 meses)                         8,23%    -5,56%  válido
+   2  Regressão linear (tendência)                            10,30%    -4,19%  válido
+   3  Ingênuo sazonal                                         10,99%   -10,70%  válido
+   4  Média móvel de 3 meses                                  14,55%    +9,25%  válido
+   5  Holt com tendência amortecida                           17,34%   +14,54%  válido
+   6  Combinação de modelos (média)                           17,34%   +14,50%  válido
+   7  Método Theta                                            17,35%   +14,47%  válido
+   8  Suavização exponencial simples (SES)                    17,46%   +14,69%  válido
+   9  Média sazonal (nível x índices sazonais)                     -         -  não elegível: exige 24 meses de treino e a menor janela de validação tem 15
+  10  Sazonal com crescimento anual                                -         -  não elegível: exige 24 meses de treino e a menor janela de validação tem 15
+  11  Regressão linear com sazonalidade mensal                     -         -  não elegível: exige 24 meses de treino e a menor janela de validação tem 15
+  12  Autorregressivo sazonal (AR 1 e 12)                          -         -  não elegível: exige 36 meses de histórico (há 24)
+  13  Holt-Winters aditivo (tendência amortecida)                  -         -  não elegível: exige 24 meses de treino e a menor janela de validação tem 15
+  14  Holt-Winters multiplicativo (tendência amortecida)           -         -  não elegível: exige 24 meses de treino e a menor janela de validação tem 15
+  (*) metodologia escolhida  |  WAPE = erro absoluto total / valor real total; viés + = superestimou
+
+>>> RECH
+----------------------------------------------------------------------------------------------------
+  Período considerado : 10/2024 a 09/2026 (24 meses)
+  Metodologia         : Ingênuo sazonal
+  - Zeros iniciais de 01/2021 a 09/2024 desconsiderados (unidade ainda não ligada).
+  Por que esta metodologia:
+    Características da série: sazonalidade não mensurável (menos de 36 meses de histórico);
+    tendência de queda estatisticamente significativa (-10,1% ao ano, p=0,007); variabilidade baixa
+    (coeficiente de variação 11,1%). Entre 8 metodologias testadas (7 válidas), 'Ingênuo sazonal'
+    obteve o menor erro na validação cruzada temporal (4 janelas de teste de 6 meses): WAPE de
+    6,99% e viés de +6,42%. Como funciona: repete o mesmo mês do último ano; adequado quando o
+    perfil sazonal é estável e o nível não muda.
+  Ranking das metodologias testadas:
+   #  Metodologia                                               WAPE      Viés  Situação
+  --------------------------------------------------------------------------------------------------
+ * 1  Ingênuo sazonal                                          6,99%    +6,42%  válido
+   2  Média simples (últimos 12 meses)                        11,49%    +7,46%  válido
+   3  Média móvel de 3 meses                                  17,02%   +14,97%  válido
+   4  Método Theta                                            17,11%   +16,09%  válido
+   5  Combinação de modelos (média)                           17,39%   +16,42%  válido
+   6  Holt com tendência amortecida                           17,68%   +16,76%  válido
+   7  Suavização exponencial simples (SES)                    17,99%   +17,10%  válido
+   8  Regressão linear (tendência)                            11,24%    +3,54%  reprovado: projeção com valores negativos (histórico só tem valores não negativos)
+   9  Média sazonal (nível x índices sazonais)                     -         -  não elegível: exige 24 meses de treino e a menor janela de validação tem 15
+  10  Sazonal com crescimento anual                                -         -  não elegível: exige 24 meses de treino e a menor janela de validação tem 15
+  11  Regressão linear com sazonalidade mensal                     -         -  não elegível: exige 24 meses de treino e a menor janela de validação tem 15
+  12  Autorregressivo sazonal (AR 1 e 12)                          -         -  não elegível: exige 36 meses de histórico (há 24)
+  13  Holt-Winters aditivo (tendência amortecida)                  -         -  não elegível: exige 24 meses de treino e a menor janela de validação tem 15
+  14  Holt-Winters multiplicativo (tendência amortecida)           -         -  não elegível: exige 24 meses de treino e a menor janela de validação tem 15
+  (*) metodologia escolhida  |  WAPE = erro absoluto total / valor real total; viés + = superestimou
+
+>>> DANIELI
+----------------------------------------------------------------------------------------------------
+  Período considerado : 12/2024 a 09/2026 (22 meses)
+  Metodologia         : Ingênuo sazonal
+  - Zeros iniciais de 01/2021 a 11/2024 desconsiderados (unidade ainda não ligada).
+  Por que esta metodologia:
+    Características da série: sazonalidade não mensurável (menos de 36 meses de histórico); sem
+    tendência estatisticamente significativa (-0,6% ao ano, p=0,88); variabilidade baixa
+    (coeficiente de variação 9,9%). Entre 4 metodologias testadas (4 válidas), 'Ingênuo sazonal'
+    obteve o menor erro na validação cruzada temporal (4 janelas de teste de 5 meses): WAPE de
+    5,88% e viés de -5,70%. Como funciona: repete o mesmo mês do último ano; adequado quando o
+    perfil sazonal é estável e o nível não muda.
+  Ranking das metodologias testadas:
+   #  Metodologia                                               WAPE      Viés  Situação
+  --------------------------------------------------------------------------------------------------
+ * 1  Ingênuo sazonal                                          5,88%    -5,70%  válido
+   2  Média simples (últimos 12 meses)                         6,65%    +0,75%  válido
+   3  Média móvel de 3 meses                                  14,98%   +12,99%  válido
+   4  Suavização exponencial simples (SES)                    15,31%   +13,30%  válido
+   5  Regressão linear (tendência)                                 -         -  não elegível: extrapola tendência; exige ao menos 24 meses de histórico ativo (há 22)
+   6  Média sazonal (nível x índices sazonais)                     -         -  não elegível: exige 24 meses de histórico (há 22)
+   7  Sazonal com crescimento anual                                -         -  não elegível: exige 24 meses de histórico (há 22)
+   8  Holt com tendência amortecida                                -         -  não elegível: extrapola tendência; exige ao menos 24 meses de histórico ativo (há 22)
+   9  Método Theta                                                 -         -  não elegível: extrapola tendência; exige ao menos 24 meses de histórico ativo (há 22)
+  10  Regressão linear com sazonalidade mensal                     -         -  não elegível: exige 24 meses de histórico (há 22)
+  11  Autorregressivo sazonal (AR 1 e 12)                          -         -  não elegível: exige 36 meses de histórico (há 22)
+  12  Holt-Winters aditivo (tendência amortecida)                  -         -  não elegível: exige 24 meses de histórico (há 22)
+  13  Holt-Winters multiplicativo (tendência amortecida)           -         -  não elegível: exige 24 meses de histórico (há 22)
+  14  Combinação de modelos (média)                                -         -  não elegível: menos de 2 modelos estruturais válidos para combinar
+  (*) metodologia escolhida  |  WAPE = erro absoluto total / valor real total; viés + = superestimou
+
+>>> MASTER
+----------------------------------------------------------------------------------------------------
+  Período considerado : 12/2024 a 09/2026 (22 meses)
+  Metodologia         : Ingênuo sazonal
+  - Zeros iniciais de 01/2021 a 11/2024 desconsiderados (unidade ainda não ligada).
+  Por que esta metodologia:
+    Características da série: sazonalidade não mensurável (menos de 36 meses de histórico); sem
+    tendência estatisticamente significativa (-3,8% ao ano, p=0,53); variabilidade baixa
+    (coeficiente de variação 14,4%). Entre 4 metodologias testadas (4 válidas), 'Ingênuo sazonal'
+    obteve o menor erro na validação cruzada temporal (4 janelas de teste de 5 meses): WAPE de
+    5,94% e viés de -5,53%. Como funciona: repete o mesmo mês do último ano; adequado quando o
+    perfil sazonal é estável e o nível não muda.
+  Ranking das metodologias testadas:
+   #  Metodologia                                               WAPE      Viés  Situação
+  --------------------------------------------------------------------------------------------------
+ * 1  Ingênuo sazonal                                          5,94%    -5,53%  válido
+   2  Média simples (últimos 12 meses)                        10,20%    +3,34%  válido
+   3  Suavização exponencial simples (SES)                    20,62%   +19,00%  válido
+   4  Média móvel de 3 meses                                  21,54%   +20,20%  válido
+   5  Regressão linear (tendência)                                 -         -  não elegível: extrapola tendência; exige ao menos 24 meses de histórico ativo (há 22)
+   6  Média sazonal (nível x índices sazonais)                     -         -  não elegível: exige 24 meses de histórico (há 22)
+   7  Sazonal com crescimento anual                                -         -  não elegível: exige 24 meses de histórico (há 22)
+   8  Holt com tendência amortecida                                -         -  não elegível: extrapola tendência; exige ao menos 24 meses de histórico ativo (há 22)
+   9  Método Theta                                                 -         -  não elegível: extrapola tendência; exige ao menos 24 meses de histórico ativo (há 22)
+  10  Regressão linear com sazonalidade mensal                     -         -  não elegível: exige 24 meses de histórico (há 22)
+  11  Autorregressivo sazonal (AR 1 e 12)                          -         -  não elegível: exige 36 meses de histórico (há 22)
+  12  Holt-Winters aditivo (tendência amortecida)                  -         -  não elegível: exige 24 meses de histórico (há 22)
+  13  Holt-Winters multiplicativo (tendência amortecida)           -         -  não elegível: exige 24 meses de histórico (há 22)
+  14  Combinação de modelos (média)                                -         -  não elegível: menos de 2 modelos estruturais válidos para combinar
+  (*) metodologia escolhida  |  WAPE = erro absoluto total / valor real total; viés + = superestimou
+
+>>> PRIMAVERA
+----------------------------------------------------------------------------------------------------
+  Período considerado : 03/2025 a 09/2026 (19 meses)
+  Metodologia         : Suavização exponencial simples (SES)
+  - Zeros iniciais de 01/2021 a 02/2025 desconsiderados (unidade ainda não ligada).
+  Por que esta metodologia:
+    Características da série: sazonalidade não mensurável (menos de 36 meses de histórico);
+    tendência de alta estatisticamente significativa (+19,3% ao ano, p=0,045); variabilidade
+    moderada (coeficiente de variação 19,5%). Entre 4 metodologias testadas (4 válidas),
+    'Suavização exponencial simples (SES)' obteve o menor erro na validação cruzada temporal (4
+    janelas de teste de 4 meses): WAPE de 19,09% e viés de -16,36%. Como funciona: nível ponderado
+    com pesos decrescentes no tempo; adequado a séries sem tendência nem sazonalidade, mas com
+    nível que oscila.
+  Ranking das metodologias testadas:
+   #  Metodologia                                               WAPE      Viés  Situação
+  --------------------------------------------------------------------------------------------------
+ * 1  Suavização exponencial simples (SES)                    19,09%   -16,36%  válido
+   2  Média móvel de 3 meses                                  19,75%   -19,41%  válido
+   3  Ingênuo sazonal                                         19,78%   -19,78%  válido
+   4  Média simples (últimos 12 meses)                        21,51%   -21,42%  válido
+   5  Regressão linear (tendência)                                 -         -  não elegível: extrapola tendência; exige ao menos 24 meses de histórico ativo (há 19)
+   6  Média sazonal (nível x índices sazonais)                     -         -  não elegível: exige 24 meses de histórico (há 19)
+   7  Sazonal com crescimento anual                                -         -  não elegível: exige 24 meses de histórico (há 19)
+   8  Holt com tendência amortecida                                -         -  não elegível: extrapola tendência; exige ao menos 24 meses de histórico ativo (há 19)
+   9  Método Theta                                                 -         -  não elegível: extrapola tendência; exige ao menos 24 meses de histórico ativo (há 19)
+  10  Regressão linear com sazonalidade mensal                     -         -  não elegível: exige 24 meses de histórico (há 19)
+  11  Autorregressivo sazonal (AR 1 e 12)                          -         -  não elegível: exige 36 meses de histórico (há 19)
+  12  Holt-Winters aditivo (tendência amortecida)                  -         -  não elegível: exige 24 meses de histórico (há 19)
+  13  Holt-Winters multiplicativo (tendência amortecida)           -         -  não elegível: exige 24 meses de histórico (há 19)
+  14  Combinação de modelos (média)                                -         -  não elegível: menos de 2 modelos estruturais válidos para combinar
+  (*) metodologia escolhida  |  WAPE = erro absoluto total / valor real total; viés + = superestimou
+
+>>> BB
+----------------------------------------------------------------------------------------------------
+  Período considerado : 04/2025 a 09/2026 (18 meses)
+  Metodologia         : Média simples (últimos 12 meses)
+  - Zeros iniciais de 01/2021 a 03/2025 desconsiderados (unidade ainda não ligada).
+  Por que esta metodologia:
+    Características da série: sazonalidade não mensurável (menos de 36 meses de histórico); sem
+    tendência estatisticamente significativa (-7,6% ao ano, p=0,62); variabilidade moderada
+    (coeficiente de variação 26,9%). Entre 3 metodologias testadas (3 válidas), 'Média simples
+    (últimos 12 meses)' obteve o menor erro na validação cruzada temporal (4 janelas de teste de 4
+    meses): WAPE de 16,90% e viés de +9,78%. Como funciona: projeta um nível constante igual à
+    média dos últimos 12 meses; adequado a séries estáveis, sem tendência nem sazonalidade
+    relevantes.
+  Ranking das metodologias testadas:
+   #  Metodologia                                               WAPE      Viés  Situação
+  --------------------------------------------------------------------------------------------------
+ * 1  Média simples (últimos 12 meses)                        16,90%    +9,78%  válido
+   2  Média móvel de 3 meses                                  17,28%    +8,48%  válido
+   3  Suavização exponencial simples (SES)                    17,37%    -0,85%  válido
+   4  Ingênuo sazonal                                              -         -  não elegível: exige 12 meses de treino e a menor janela de validação tem 11
+   5  Regressão linear (tendência)                                 -         -  não elegível: extrapola tendência; exige ao menos 24 meses de histórico ativo (há 18)
+   6  Média sazonal (nível x índices sazonais)                     -         -  não elegível: exige 24 meses de histórico (há 18)
+   7  Sazonal com crescimento anual                                -         -  não elegível: exige 24 meses de histórico (há 18)
+   8  Holt com tendência amortecida                                -         -  não elegível: extrapola tendência; exige ao menos 24 meses de histórico ativo (há 18)
+   9  Método Theta                                                 -         -  não elegível: extrapola tendência; exige ao menos 24 meses de histórico ativo (há 18)
+  10  Regressão linear com sazonalidade mensal                     -         -  não elegível: exige 24 meses de histórico (há 18)
+  11  Autorregressivo sazonal (AR 1 e 12)                          -         -  não elegível: exige 36 meses de histórico (há 18)
+  12  Holt-Winters aditivo (tendência amortecida)                  -         -  não elegível: exige 24 meses de histórico (há 18)
+  13  Holt-Winters multiplicativo (tendência amortecida)           -         -  não elegível: exige 24 meses de histórico (há 18)
+  14  Combinação de modelos (média)                                -         -  não elegível: menos de 2 modelos estruturais válidos para combinar
+  (*) metodologia escolhida  |  WAPE = erro absoluto total / valor real total; viés + = superestimou
+
+>>> CASELANI
+----------------------------------------------------------------------------------------------------
+  Período considerado : 02/2026 a 09/2026 (8 meses)
+  Metodologia         : Média móvel de 3 meses
+  - Zeros iniciais de 01/2021 a 12/2025 desconsiderados (unidade ainda não ligada).
+  - Primeiro mês após a ligação (01/2026, valor 0,0588) é inferior a 30% da mediana dos meses
+  seguintes (28,3445): tratado como mês de ligação parcial e descartado.
+  Por que esta metodologia:
+    Características da série: sazonalidade não mensurável (menos de 36 meses de histórico);
+    tendência de queda estatisticamente significativa (-28,9% ao ano, p=0,030); variabilidade baixa
+    (coeficiente de variação 7,8%). Entre 3 metodologias testadas (3 válidas), 'Média móvel de 3
+    meses' obteve o menor erro na validação cruzada temporal (3 janelas de teste de 2 meses): WAPE
+    de 5,01% e viés de +5,01%. Como funciona: projeta o nível recente (média dos 3 últimos meses);
+    reage rápido a mudanças de patamar, sem tendência nem sazonalidade.
+  Ranking das metodologias testadas:
+   #  Metodologia                                               WAPE      Viés  Situação
+  --------------------------------------------------------------------------------------------------
+ * 1  Média móvel de 3 meses                                   5,01%    +5,01%  válido
+   2  Suavização exponencial simples (SES)                     8,01%    +8,01%  válido
+   3  Média simples (últimos 12 meses)                         8,30%    +8,30%  válido
+   4  Ingênuo sazonal                                              -         -  não elegível: exige 12 meses de histórico (há 8)
+   5  Regressão linear (tendência)                                 -         -  não elegível: extrapola tendência; exige ao menos 24 meses de histórico ativo (há 8)
+   6  Média sazonal (nível x índices sazonais)                     -         -  não elegível: exige 24 meses de histórico (há 8)
+   7  Sazonal com crescimento anual                                -         -  não elegível: exige 24 meses de histórico (há 8)
+   8  Holt com tendência amortecida                                -         -  não elegível: extrapola tendência; exige ao menos 24 meses de histórico ativo (há 8)
+   9  Método Theta                                                 -         -  não elegível: extrapola tendência; exige ao menos 24 meses de histórico ativo (há 8)
+  10  Regressão linear com sazonalidade mensal                     -         -  não elegível: exige 24 meses de histórico (há 8)
+  11  Autorregressivo sazonal (AR 1 e 12)                          -         -  não elegível: exige 36 meses de histórico (há 8)
+  12  Holt-Winters aditivo (tendência amortecida)                  -         -  não elegível: exige 24 meses de histórico (há 8)
+  13  Holt-Winters multiplicativo (tendência amortecida)           -         -  não elegível: exige 24 meses de histórico (há 8)
+  14  Combinação de modelos (média)                                -         -  não elegível: menos de 2 modelos estruturais válidos para combinar
+  (*) metodologia escolhida  |  WAPE = erro absoluto total / valor real total; viés + = superestimou
+
+>>> LIQUIDA_MUX
+----------------------------------------------------------------------------------------------------
+  Período considerado : 01/2021 a 09/2026 (69 meses)
+  Metodologia         : Identidade contábil
+  Por que esta metodologia:
+    Foi detectado que, em todo o histórico, LIQUIDA_MUX = MUX - (PLASBIL + PIETROBON + SIMONETTO +
+    ITALAC + KANINHA + RECH + DANIELI + MASTER + PRIMAVERA + BB + CASELANI) (diferença máxima de
+    0,0002). Para manter a coerência entre as medições, a projeção foi calculada pela própria
+    identidade a partir das projeções das demais medições. Se projetada de forma independente, a
+    melhor metodologia seria 'Ingênuo sazonal' (WAPE 8,93%); esse resultado aparece no ranking
+    abaixo apenas como referência e também é gravado na pasta de metodologias, se solicitado.
+  Ranking das metodologias testadas:
+   #  Metodologia                                               WAPE      Viés  Situação
+  --------------------------------------------------------------------------------------------------
+   1  Ingênuo sazonal                                          8,93%    -0,55%  válido
+   2  Média simples (últimos 12 meses)                        10,19%    -0,55%  válido
+   3  Média sazonal (nível x índices sazonais)                10,79%    -0,55%  válido
+   4  Sazonal com crescimento anual                           12,06%    -2,11%  válido
+   5  Autorregressivo sazonal (AR 1 e 12)                     12,90%    -6,71%  válido
+   6  Média móvel de 3 meses                                  14,12%    +0,59%  válido
+   7  Holt com tendência amortecida                           16,58%    -0,19%  válido
+   8  Combinação de modelos (média)                           16,68%    -2,07%  válido
+   9  Suavização exponencial simples (SES)                    17,05%    -0,01%  válido
+  10  Método Theta                                            17,39%    -3,97%  válido
+  11  Holt-Winters multiplicativo (tendência amortecida)      23,80%    +1,30%  válido
+  12  Holt-Winters aditivo (tendência amortecida)             25,48%    -0,76%  válido
+  13  Regressão linear (tendência)                            17,89%   -17,65%  reprovado: projeção com valores negativos (histórico só tem valores não negativos)
+  14  Regressão linear com sazonalidade mensal                18,04%   -17,34%  reprovado: projeção com valores negativos (histórico só tem valores não negativos)
+  (*) metodologia escolhida  |  WAPE = erro absoluto total / valor real total; viés + = superestimou
+
+====================================================================================================
+Fim do relatório.
