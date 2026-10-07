@@ -1,9 +1,9 @@
 ====================================================================================================
                                RELATÓRIO DE METODOLOGIAS DE PROJEÇÃO                                
 ====================================================================================================
-Gerado em            : 07/10/2026 09:43
+Gerado em            : 07/10/2026 09:51
 Arquivo de entrada   : DadosHistoricos.csv
-Histórico disponível : 01/2021 a 09/2026 (69 meses, 13 medições)
+Histórico disponível : 01/2021 a 09/2026 (69 meses, 12 medições)
 Dados usados no ajuste: até 09/2026
 Período projetado    : 01/2027 a 12/2035 (108 meses)
 
@@ -40,7 +40,6 @@ CRITÉRIOS UTILIZADOS
 RESUMO
 ----------------------------------------------------------------------------------------------------
   Medição              Histórico usado        Metodologia escolhida                              WAPE
-  MUX                  01/2021-09/2026 (69m)  Regressão linear (tendência)                      6,92%
   PLASBIL              01/2021-09/2026 (69m)  Regressão linear com sazonalidade mensal          5,49%
   PIETROBON            01/2021-09/2026 (69m)  Média sazonal (nível x índices sazonais)          4,17%
   SIMONETTO            01/2022-09/2026 (57m)  Holt-Winters multiplicativo (tendência amortecida)    8,36%
@@ -52,40 +51,10 @@ RESUMO
   PRIMAVERA            03/2025-09/2026 (19m)  Suavização exponencial simples (SES)             19,09%
   BB                   04/2025-09/2026 (18m)  Média simples (últimos 12 meses)                 16,90%
   CASELANI             02/2026-09/2026 (8m)   Média móvel de 3 meses                            5,01%
-  LIQUIDA_MUX          01/2021-09/2026 (69m)  Identidade contábil                                   -
+  LIQUIDA_MUX          01/2021-09/2026 (69m)  Ingênuo sazonal                                   8,93%
 
 DETALHAMENTO POR MEDIÇÃO
 ====================================================================================================
-
->>> MUX
-----------------------------------------------------------------------------------------------------
-  Período considerado : 01/2021 a 09/2026 (69 meses)
-  Metodologia         : Regressão linear (tendência)
-  Por que esta metodologia:
-    Características da série: sazonalidade fraca (força sazonal 0,34); tendência de alta
-    estatisticamente significativa (+4,4% ao ano, p=0,000); variabilidade baixa (coeficiente de
-    variação 10,3%). Entre 13 metodologias testadas (13 válidas), 'Regressão linear (tendência)'
-    obteve o menor erro na validação cruzada temporal (4 janelas de teste de 12 meses): WAPE de
-    6,92% e viés de -5,32%. Como funciona: reta de tendência ajustada por mínimos quadrados;
-    adequado a crescimento/queda constante sem sazonalidade.
-  Ranking das metodologias testadas:
-   #  Metodologia                                               WAPE      Viés  Situação
-  --------------------------------------------------------------------------------------------------
- * 1  Regressão linear (tendência)                             6,92%    -5,32%  válido
-   2  Regressão linear com sazonalidade mensal                 7,05%    -5,09%  válido
-   3  Combinação de modelos (média)                            7,07%    -1,46%  válido
-   4  Média simples (últimos 12 meses)                         7,16%    -6,02%  válido
-   5  Sazonal com crescimento anual                            7,32%    +1,64%  válido
-   6  Ingênuo sazonal                                          7,86%    -6,02%  válido
-   7  Média sazonal (nível x índices sazonais)                 7,91%    -6,02%  válido
-   8  Suavização exponencial simples (SES)                     8,01%    -3,08%  válido
-   9  Holt-Winters aditivo (tendência amortecida)              8,06%    -1,80%  válido
-  10  Método Theta                                             8,13%    -2,08%  válido
-  11  Holt-Winters multiplicativo (tendência amortecida)       8,45%    -1,80%  válido
-  12  Média móvel de 3 meses                                   8,51%    -2,55%  válido
-  13  Holt com tendência amortecida                            9,09%    +0,37%  válido
-  14  Autorregressivo sazonal (AR 1 e 12)                          -         -  não aplicável: modelo autorregressivo não estacionário (explosivo).
-  (*) metodologia escolhida  |  WAPE = erro absoluto total / valor real total; viés + = superestimou
 
 >>> PLASBIL
 ----------------------------------------------------------------------------------------------------
@@ -433,18 +402,18 @@ DETALHAMENTO POR MEDIÇÃO
 >>> LIQUIDA_MUX
 ----------------------------------------------------------------------------------------------------
   Período considerado : 01/2021 a 09/2026 (69 meses)
-  Metodologia         : Identidade contábil
+  Metodologia         : Ingênuo sazonal
   Por que esta metodologia:
-    Foi detectado que, em todo o histórico, LIQUIDA_MUX = MUX - (PLASBIL + PIETROBON + SIMONETTO +
-    ITALAC + KANINHA + RECH + DANIELI + MASTER + PRIMAVERA + BB + CASELANI) (diferença máxima de
-    0,0002). Para manter a coerência entre as medições, a projeção foi calculada pela própria
-    identidade a partir das projeções das demais medições. Se projetada de forma independente, a
-    melhor metodologia seria 'Ingênuo sazonal' (WAPE 8,93%); esse resultado aparece no ranking
-    abaixo apenas como referência e também é gravado na pasta de metodologias, se solicitado.
+    Características da série: sazonalidade fraca (força sazonal 0,27); tendência de queda
+    estatisticamente significativa (-8,6% ao ano, p=0,000); variabilidade moderada (coeficiente de
+    variação 19,7%). Entre 14 metodologias testadas (12 válidas), 'Ingênuo sazonal' obteve o menor
+    erro na validação cruzada temporal (4 janelas de teste de 12 meses): WAPE de 8,93% e viés de
+    -0,55%. Como funciona: repete o mesmo mês do último ano; adequado quando o perfil sazonal é
+    estável e o nível não muda.
   Ranking das metodologias testadas:
    #  Metodologia                                               WAPE      Viés  Situação
   --------------------------------------------------------------------------------------------------
-   1  Ingênuo sazonal                                          8,93%    -0,55%  válido
+ * 1  Ingênuo sazonal                                          8,93%    -0,55%  válido
    2  Média simples (últimos 12 meses)                        10,19%    -0,55%  válido
    3  Média sazonal (nível x índices sazonais)                10,79%    -0,55%  válido
    4  Sazonal com crescimento anual                           12,06%    -2,11%  válido
