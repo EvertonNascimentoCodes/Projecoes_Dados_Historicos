@@ -1,26 +1,3 @@
-#!/usr/bin/env python3
-"""
-Master.py - Ponto de entrada do sistema de projeção de medições.
-
-Uso interativo (pergunta tudo no terminal):
-    python Master.py
-
-Uso por parâmetros (sem perguntas; útil para automatizar):
-    python Master.py --inicio 10/2026 --fim 12/2030 --metodologias s --identidade s
-
-Fluxo:
-  1. Lê DadosHistoricos.csv (UTF-8, ';' como separador, ',' como decimal).
-  2. Pergunta o mês/ano inicial e final da projeção.
-  3. Para cada medição: identifica o período ativo (descarta zeros de unidade
-     não ligada), testa todas as metodologias por validação cruzada temporal e
-     escolhe a mais aderente.
-  4. Grava Projecoes_Resultados.csv, Projecoes_Resultados_Anual.csv,
-     Projecoes_Resultados_linhas.csv, Projecoes_Resultados_linhas_anos.csv e
-     Relatorio_Metodologias.txt.
-  5. Pergunta se deve gravar os resultados de cada metodologia testada em
-     Metodologias_Resultados/[medicao]_[metodologia]_result.csv.
-"""
-
 from __future__ import annotations
 
 import argparse

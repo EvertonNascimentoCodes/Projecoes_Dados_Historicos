@@ -1,17 +1,14 @@
 ====================================================================================================
                                RELATÓRIO DE METODOLOGIAS DE PROJEÇÃO                                
 ====================================================================================================
-Gerado em            : 06/10/2026 16:55
+Gerado em            : 07/10/2026 09:43
 Arquivo de entrada   : DadosHistoricos.csv
 Histórico disponível : 01/2021 a 09/2026 (69 meses, 13 medições)
 Dados usados no ajuste: até 09/2026
-Período projetado    : 10/2027 a 12/2035 (99 meses)
-
-Observação: nos totais anuais, os seguintes anos estão incompletos (somam apenas os meses
-projetados): 2027 (3 meses).
+Período projetado    : 01/2027 a 12/2035 (108 meses)
 
 AVISOS
-  - Há 12 mês(es) entre o fim do histórico e o início pedido; eles são projetados internamente, mas
+  - Há 3 mês(es) entre o fim do histórico e o início pedido; eles são projetados internamente, mas
   não são gravados.
   - Horizonte de 111 meses à frente do último dado: a incerteza cresce com o horizonte;
   recomenda-se revisar as projeções periodicamente.
